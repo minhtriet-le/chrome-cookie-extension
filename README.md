@@ -11,20 +11,58 @@ Extension Chrome giúp lấy cookies `c_user` và `xs` từ Facebook và cập n
 
 ## Cài đặt Extension cho Chrome
 
-### Bước 1: Tải source code
-- Clone hoặc tải về thư mục `chrome-cookie-extension`
+### Bước 1: Tải source code về máy
+**Cách 1: Tải file ZIP (dành cho người mới)**
+1. Truy cập trang GitHub: https://github.com/minhtriet-le/chrome-cookie-extension
+2. Click nút màu xanh **Code** (góc trên bên phải)
+3. Chọn **Download ZIP** 
+4. Sau khi tải xong, giải nén file ZIP ra một thư mục bất kỳ trên máy tính
+   - Ví dụ: `D:\Extensions\chrome-cookie-extension`
 
-### Bước 2: Cài extension vào Chrome
-1. Mở trình duyệt Chrome
-2. Truy cập `chrome://extensions/` (copy và paste vào thanh địa chỉ)
-3. Bật **Developer mode** (góc trên bên phải)
-4. Click nút **Load unpacked** (Tải tiện ích đã giải nén)
-5. Chọn thư mục `chrome-cookie-extension` mà bạn vừa tải về
-6. Extension sẽ xuất hiện trong danh sách và trên toolbar
+**Cách 2: Clone qua Git (dành cho người có kinh nghiệm)**
+```bash
+git clone https://github.com/minhtriet-le/chrome-cookie-extension.git
+```
 
-### Bước 3: Ghim extension (tuỳ chọn)
-- Click vào icon mảnh ghép 🧩 trên toolbar Chrome
-- Tìm "Cookie Updater" và click vào icon ghim 📌
+### Bước 2: Cài extension vào Chrome (quan trọng!)
+1. **Mở trình duyệt Chrome**
+   
+2. **Vào trang quản lý Extension:**
+   - Cách 1: Copy đoạn này `chrome://extensions/` và paste vào thanh địa chỉ Chrome, rồi Enter
+   - Cách 2: Click biểu tượng 3 chấm ⋮ → **Tiện ích mở rộng** → **Quản lý tiện ích mở rộng**
+   - Cách 3: Dùng phím tắt: `Ctrl + Shift + E` (Windows) hoặc `Cmd + Shift + E` (Mac)
+
+3. **Bật chế độ Developer (Nhà phát triển):**
+   - Tìm nút **Developer mode** ở góc trên bên **phải** màn hình
+   - Click để bật lên (nút chuyển sang màu xanh)
+   - Sau khi bật, sẽ xuất hiện thêm 3 nút mới: "Load unpacked", "Pack extension", "Update"
+
+4. **Load extension vào Chrome:**
+   - Click nút **Load unpacked** (Tải tiện ích đã giải nén)
+   - Một cửa sổ chọn thư mục sẽ hiện ra
+   - Duyệt đến thư mục `chrome-cookie-extension` mà bạn vừa giải nén ở Bước 1
+   - **Lưu ý:** Chọn đúng thư mục chứa file `manifest.json` (thư mục gốc của extension)
+   - Click **Select Folder** (Chọn thư mục)
+
+5. **Kiểm tra extension đã cài thành công:**
+   - Extension "Cookie Updater" sẽ xuất hiện trong danh sách
+   - Bạn sẽ thấy icon 🍪 và tên "Cookie Updater"
+   - Nếu không thấy lỗi màu đỏ → Cài đặt thành công!
+
+### Bước 3: Ghim extension lên toolbar (khuyến nghị)
+Để dễ dàng truy cập, bạn nên ghim extension lên thanh công cụ:
+
+1. **Tìm icon tiện ích mở rộng:**
+   - Click vào icon hình mảnh ghép 🧩 trên thanh toolbar Chrome (góc phải trên)
+   
+2. **Ghim extension:**
+   - Tìm "Cookie Updater" trong danh sách
+   - Click vào icon hình cái ghim 📌 bên cạnh tên
+   - Icon 🍪 Cookie Updater sẽ xuất hiện cố định trên toolbar
+   
+3. **Kiểm tra:**
+   - Icon 🍪 hiện ra trên toolbar → Ghim thành công
+   - Bây giờ bạn có thể click vào icon này bất cứ lúc nào để mở extension
 
 ## Chuẩn bị file xs_cookie.txt
 
