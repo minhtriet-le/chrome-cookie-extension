@@ -33,8 +33,9 @@ Extension Chrome giúp lấy cookies `c_user` và `xs` từ Facebook và cập n
 1. Tạo file text với tên **xs_cookie.txt** ở vị trí bất kỳ trên máy tính
 2. Nội dung file có dạng:
 ```
-c_user=123456789
-xs=abc123xyz789
+[c_user1],[email1],[xs1]
+[c_user2],[email2],[xs2]
+...
 ```
 3. Lưu file này để sử dụng sau
 
