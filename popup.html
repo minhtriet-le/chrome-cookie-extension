@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XS Cookie Updater</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🍪 Cookie Updater</h1>
+    </div>
+    
+    <div class="info">
+      <div class="info-row">
+        <span class="label">Domain:</span>
+        <span class="value" id="domain">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">c_user:</span>
+        <span class="value" id="cuser">-</span>
+      </div>
+      <div class="info-row">
+        <span class="label">xs:</span>
+        <span class="value" id="xs">-</span>
+      </div>
+    </div>
+
+    <div class="file-section">
+      <label>File đích: <span id="lastFilePath" class="last-path"></span></label>
+      <div id="filePath" class="file-path">Chưa chọn file</div>
+    </div>
+
+    <div class="buttons">
+      <button id="chooseFile" class="btn">Chọn File</button>
+      <button id="updateFile" class="btn btn-update" disabled>Cập Nhật</button>
+    </div>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
