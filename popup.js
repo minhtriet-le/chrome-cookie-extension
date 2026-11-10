@@ -47,9 +47,17 @@ async function loadFilePath() {
 
 // Lấy cookies c_user và xs từ tab hiện tại
 async function getCookies() {
+  // Reset để khi đổi sang tab khác không dùng nhầm cookie của tab trước
+  cUser = '';
+  xsCookie = '';
+  domainEl.textContent = '-';
+  cuserEl.textContent = '-';
+  xsEl.textContent = '-';
+  checkCanUpdate();
+
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+
     if (!tab || !tab.url) {
       showStatus('Không thể lấy thông tin tab!', 'error');
       return false;
@@ -119,31 +127,36 @@ function checkCanUpdate() {
   }
 }
 
-// Chọn file
+// Ghi nhật ký lần chọn file gần nhất (hiện ở dòng nhỏ cạnh "File đích" để chẩn đoán)
+async function logPick(message) {
+  try {
+    await chrome.storage.local.set({ pickLog: new Date().toLocaleTimeString() + ' ' + message });
+  } catch (e) { /* bỏ qua */ }
+}
+
+// Chọn file. Chạy trong side panel nên hộp thoại không làm đóng giao diện
+// (khác popup toolbar, nơi showOpenFilePicker bị AbortError).
 async function chooseFile() {
   try {
     const [handle] = await window.showOpenFilePicker({
-      types: [{
-        description: 'Text Files',
-        accept: { 'text/plain': ['.txt'] }
-      }],
+      types: [{ description: 'Text Files', accept: { 'text/plain': ['.txt'] } }],
       multiple: false
     });
-    
+
     fileHandle = handle;
-    const fileName = handle.name;
-    
-    filePathEl.textContent = fileName;
-    filePathEl.title = fileName;
+    filePathEl.textContent = handle.name;
+    filePathEl.title = handle.name;
     filePathEl.classList.add('selected');
-    
-    // Lưu file name để nhớ lần sau
-    await saveFilePath(fileName);
-    
-    showStatus('✓ Đã chọn file: ' + fileName, 'success');
+
+    // Lưu để lần sau mở lại vẫn nhớ file
+    await saveFilePath(handle.name);
+    await saveHandle(handle);
+    await logPick('đã chọn và lưu: ' + handle.name);
+
+    showStatus('✓ Đã chọn file: ' + handle.name, 'success');
     checkCanUpdate();
-    
   } catch (error) {
+    await logPick('lỗi ' + error.name + ': ' + error.message);
     if (error.name !== 'AbortError') {
       showStatus('Lỗi chọn file: ' + error.message, 'error');
     }
@@ -158,6 +171,14 @@ async function updateFile() {
   }
 
   try {
+    // Xin lại quyền ghi nếu handle được khôi phục từ lần mở trước
+    if ((await fileHandle.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+      if ((await fileHandle.requestPermission({ mode: 'readwrite' })) !== 'granted') {
+        showStatus('Chưa được cấp quyền ghi file!', 'error');
+        return;
+      }
+    }
+
     // Đọc file
     const file = await fileHandle.getFile();
     const content = await file.text();
@@ -205,17 +226,40 @@ async function updateFile() {
 
 // Khởi tạo khi mở popup
 async function initialize() {
+  // Hiện ngay số version + nhật ký lần chọn file gần nhất (trước mọi bước khác)
+  const version = chrome.runtime.getManifest().version;
+  try {
+    const { pickLog } = await chrome.storage.local.get(['pickLog']);
+    lastFilePathEl.textContent = '(v' + version + (pickLog ? ' · ' + pickLog : ' · chưa có nhật ký') + ')';
+    lastFilePathEl.title = lastFilePathEl.textContent;
+  } catch (e) {
+    lastFilePathEl.textContent = '(v' + version + ' · lỗi đọc nhật ký: ' + e.message + ')';
+  }
+
   // Lấy cookies
   await getCookies();
-  
-  // Load file path đã lưu (chỉ để hiển thị)
-  const savedPath = await loadFilePath();
-  if (savedPath) {
-    lastFilePath = savedPath;
-    lastFilePathEl.textContent = '(Lần trước: ' + savedPath + ')';
-    lastFilePathEl.title = savedPath; // Show full path on hover
+
+  // Khôi phục file đã chọn lần trước (nếu có)
+  const savedHandle = await loadHandle();
+  if (savedHandle) {
+    fileHandle = savedHandle;
+    filePathEl.textContent = savedHandle.name;
+    filePathEl.title = savedHandle.name;
+    filePathEl.classList.add('selected');
+    checkCanUpdate();
   }
+
 }
+
+// Side panel luôn mở: tự lấy lại cookie khi đổi tab hoặc tab tải xong trang mới
+chrome.tabs.onActivated.addListener(() => getCookies());
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (tab.active && changeInfo.status === 'complete') getCookies();
+});
+
+// Hiện mọi lỗi không bắt được lên giao diện để dễ chẩn đoán
+window.addEventListener('error', (e) => showStatus('Lỗi: ' + e.message, 'error'));
+window.addEventListener('unhandledrejection', (e) => showStatus('Lỗi: ' + (e.reason && e.reason.message || e.reason), 'error'));
 
 // Event listeners
 chooseFileBtn.addEventListener('click', chooseFile);

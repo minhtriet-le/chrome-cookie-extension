@@ -125,8 +125,10 @@ git clone https://github.com/minhtriet-le/chrome-cookie-extension.git
 ```
 chrome-cookie-extension/
 ├── manifest.json      # File cấu hình extension
-├── popup.html         # Giao diện popup
+├── popup.html         # Giao diện (side panel)
 ├── popup.js           # Logic xử lý
+├── db.js              # Lưu file handle vào IndexedDB
+├── background.js      # Mở side panel khi bấm icon
 ├── style.css          # Styling
 ├── icons/             # Icons cho extension
 │   ├── icon16.png
@@ -153,6 +155,19 @@ chrome-cookie-extension/
 
 ### Button "Cập Nhật" bị mờ
 - Bạn chưa chọn file, click nút "Chọn File" trước
+
+## Lịch sử thay đổi
+
+### v1.1
+- **Sửa lỗi:** chọn file xong, bấm Open nhưng extension báo chưa có file. Nguyên nhân: hộp thoại chọn file làm popup toolbar bị đóng nên Chrome hủy lệnh chọn file (`AbortError`, xuất hiện sau khi Chrome cập nhật).
+- Giao diện chuyển sang **side panel** (khung bên phải Chrome) để không bị đóng khi mở hộp thoại chọn file. Bấm icon extension để mở.
+- Side panel tự lấy lại cookie khi đổi tab hoặc tải trang mới, và xóa cookie cũ khi sang trang không có cookie.
+- File đã chọn được lưu vào IndexedDB: mở lại vẫn nhớ file, chỉ cần chọn một lần; khi bấm "Cập Nhật" tự xin lại quyền ghi nếu Chrome yêu cầu.
+- Hiện nhật ký lần chọn file gần nhất cạnh chữ "File đích" để chẩn đoán lỗi.
+- Thêm quyền `sidePanel` và service worker `background.js`; cần **reload** extension tại `chrome://extensions` sau khi cập nhật.
+
+### v1.0
+- Phiên bản đầu tiên.
 
 ## Tác giả
 Le Minh Triet
